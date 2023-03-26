@@ -1,0 +1,72 @@
+async function fetchIPInfoIO() {
+  const response = await fetch('https://ipinfo.io/json', {
+    mode: 'cors',
+    credentials: 'omit'
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return {
+    ip: data.ip,
+    country: data.country,
+    region: data.region
+  };
+}
+
+async function fetchIPAPI() {
+  const response = await fetch('http://ip-api.com/json', {
+    mode: 'cors',
+    credentials: 'omit'
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return {
+    ip: data.query,
+    country: data.countryCode,
+    region: data.regionName
+  };
+}
+
+async function fetchPublicIP() {
+  try {
+    const data = await Promise.race([
+      fetchIPInfoIO(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout')), 1000)
+      ),
+    ]);
+    displayIP(data.ip, data.country, data.region);
+  } catch (error) {
+    console.warn('Error fetching IP from primary services:', error);
+
+    try {
+      const data = await fetchIPAPI();
+      displayIP(data.ip, data.country, data.region);
+    } catch (error) {
+      console.error('Error fetching IP from secondary services:', error);
+      displayIP('Error: Unable to fetch IP', '', '');
+    }
+  }
+}
+
+function displayIP(ip, country, region) {
+  const ipDiv = document.createElement('div');
+  ipDiv.id = 'publicIPDisplay';
+  ipDiv.textContent = `${ip}, ${country}, ${region}`;
+  ipDiv.style.cursor = 'pointer';
+  ipDiv.title = 'Click to close';
+  ipDiv.addEventListener('click', () => {
+    ipDiv.remove();
+  });
+  document.body.appendChild(ipDiv);
+}
+
+window.addEventListener('load', fetchPublicIP);
+

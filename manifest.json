@@ -1,12 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "Public IP Display",
+  "name": "IP Display",
   "version": "1.0",
-  "description": "Display the public IP of the current page.",
-  "permissions": ["activeTab"],
-"action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html"
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
@@ -14,9 +23,6 @@
       "js": ["contentScript.js"],
       "css": ["styles.css"]
     }
-  ],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
-  },
-  "host_permissions": ["https://ipinfo.io/*"]
+  ]
 }
+

@@ -46,6 +46,10 @@ async function fetchPublicIP() {
   }
 }
 
+chrome.runtime.sendMessage({ type: 'fetchIPInfo' }, (response) => {
+  displayIP(response.ipInfoIOData, response.ipUserAgentInfoData);
+});
+
 function displayIP(ipInfoIOData, ipUserAgentInfoData) {
   ipDisplay.innerHTML = `
     China: ${ipUserAgentInfoData.ip}, ${ipUserAgentInfoData.country}, ${ipUserAgentInfoData.region}<br>

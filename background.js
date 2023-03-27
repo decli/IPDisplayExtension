@@ -1,20 +1,30 @@
-chrome.webRequest.onHeadersReceived.addListener(
-  (details) => {
-    const cspHeaderIndex = details.responseHeaders.findIndex(
-      (header) => header.name.toLowerCase() === 'content-security-policy'
-    );
-
-    if (cspHeaderIndex !== -1) {
-      const cspHeader = details.responseHeaders[cspHeaderIndex];
-      cspHeader.value = cspHeader.value.replace(
-        /connect-src[^;]*;/i,
-        (match) => `${match} https://ipinfo.io https://api.ipgeolocation.io`
-      );
-    }
-
-    return { responseHeaders: details.responseHeaders };
-  },
-  { urls: ['*://*.google.com/*'] },
-  ['blocking', 'responseHeaders', 'extraHeaders']
-);
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === 'fetchIPInfo') {
+    Promise.all([
+      fetch('https://ipinfo.io/json')
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error('Error fetching IPInfoIO:', error);
+          return {
+            ip: 'Error: Unable to fetch IP',
+            country: '',
+            region: ''
+          };
+        }),
+      fetch('https://ip.useragentinfo.com/json')
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error('Error fetching IPUserAgentInfo:', error);
+          return {
+            ip: 'Error: Unable to fetch IP',
+            country: '',
+            region: ''
+          };
+        })
+    ]).then((results) => {
+      sendResponse({ ipInfoIOData: results[0], ipUserAgentInfoData: results[1] });
+    });
+    return true;
+  }
+});
 

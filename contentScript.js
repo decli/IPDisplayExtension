@@ -7,12 +7,14 @@ ipDisplay.addEventListener('click', () => {
 });
 document.body.appendChild(ipDisplay);
 
-async function fetchIPInfoIO() {
+
+/*async function fetchIPInfoIO() {
   const response = await fetch('https://ipinfo.io/json');
   if (!response.ok) {
     throw new Error(`HTTP error: ${response.status}`);
   }
   const data = await response.json();
+  console.log('contentScript.js fetchIPInfoIO:', data);
   return {
     ip: data.ip,
     country: data.country,
@@ -21,15 +23,17 @@ async function fetchIPInfoIO() {
 }
 
 async function fetchIPUserAgentInfo() {
-  const response = await fetch('https://ip.useragentinfo.com/json');
-  if (!response.ok) {
-    throw new Error(`HTTP error: ${response.status}`);
+  const response1 = await fetch('https://ip.useragentinfo.com/json');
+  if (!response1.ok) {
+    throw new Error(`HTTP error: ${response1.status}`);
   }
-  const data = await response.json();
+  const data1 = await response1.json();
+  console.log('contentScript.js fetchIPUserAgentInfo:', data1);
   return {
-    ip: data.ip,
-    country: data.province,
-    region: data.city
+    ip: data1.ip,
+    country: data1.province,
+    //region: data1.city
+	region: "1111"
   };
 }
 
@@ -45,17 +49,24 @@ async function fetchPublicIP() {
     displayIP({ ip: 'Error: Unable to fetch IP', country: '', region: '' }, { ip: 'Error: Unable to fetch IP', country: '', region: '' });
   }
 }
+*/
 
 chrome.runtime.sendMessage({ type: 'fetchIPInfo' }, (response) => {
+	console.log('contentScript.js Sending message:', response.ipInfoIOData, response.ipUserAgentInfoData);
   displayIP(response.ipInfoIOData, response.ipUserAgentInfoData);
 });
 
 function displayIP(ipInfoIOData, ipUserAgentInfoData) {
   ipDisplay.innerHTML = `
-    China: ${ipUserAgentInfoData.ip}, ${ipUserAgentInfoData.country}, ${ipUserAgentInfoData.region}<br>
+    China: ${ipUserAgentInfoData.ip}, ${ipUserAgentInfoData.province}, ${ipUserAgentInfoData.city}<br>
     Oversea: ${ipInfoIOData.ip}, ${ipInfoIOData.country}, ${ipInfoIOData.region}
   `;
+
+  // Add this code to remove the ip-display div after 5 seconds
+  setTimeout(() => {
+    ipDisplay.remove();
+  }, 5000);
 }
 
-fetchPublicIP();
+//fetchPublicIP();
 

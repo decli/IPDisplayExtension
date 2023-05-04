@@ -1,16 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 15px;
+      font-size: 14px;
+      width: 300px;
+      padding: 10px;
+      margin: 0;
+      background-color: rgba(255, 255, 190, 0.9); /* Pale yellow with translucency */
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for a better look */
     }
   </style>
 </head>
 <body>
-  <h1>Public IP</h1>
-  <p id="publicIP">Loading...</p>
+  <div id="ip-display-popup"></div>
   <script src="popup.js"></script>
 </body>
 </html>
+

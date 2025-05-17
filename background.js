@@ -11,15 +11,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             region: ''
           };
         }),
-      fetch('https://whois.pconline.com.cn/ipJson.jsp?ip=&json=true')
+      fetch('https://ip.useragentinfo.com/json')
         .then((response) => response.json())
-        .then((data) => ({
-          ip: data.ip,
-          province: data.pro,
-          city: data.city
-        }))
         .catch((error) => {
-          console.error('Error fetching pconline:', error);
+          console.error('Error fetching IPUserAgentInfo:', error);
           return {
             ip: 'Error: Unable to fetch IP',
             country: '',

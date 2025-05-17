@@ -11,14 +11,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             region: ''
           };
         }),
-      fetch('https://ip.useragentinfo.com/json')
-        .then((response) => response.json())
+      fetch('https://whois.pconline.com.cn/ipJson.jsp?ip=&json=true')
+        .then((response) => response.arrayBuffer())
+        .then((buffer) => {
+          const decoder = new TextDecoder('gbk');
+          const text = decoder.decode(buffer);
+          return JSON.parse(text);
+        })
+        .then((data) => ({
+          ip: data.ip,
+          province: data.pro,
+          city: data.city
+        }))
         .catch((error) => {
-          console.error('Error fetching IPUserAgentInfo:', error);
+          console.error('Error fetching PConlineIPInfo:', error);
           return {
             ip: 'Error: Unable to fetch IP',
-            country: '',
-            region: ''
+            province: '',
+            city: ''
           };
         })
     ]).then((results) => {

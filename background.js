@@ -12,7 +12,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           };
         }),
       fetch('https://whois.pconline.com.cn/ipJson.jsp?ip=&json=true')
-        .then((response) => response.json())
+        .then((response) => response.arrayBuffer())
+        .then((buffer) => {
+          const decoder = new TextDecoder('gbk');
+          const text = decoder.decode(buffer);
+          return JSON.parse(text);
+        })
         .then((data) => ({
           ip: data.ip,
           province: data.pro,
@@ -32,4 +37,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 });
-
